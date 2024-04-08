@@ -65,7 +65,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             token
         }
 
-        return successResponse<typeof userObj>(200, "User Logged in Successfully", userObj, res);
+        return successResponse<typeof doc>(200, "User Logged in Successfully", doc, res);
     } catch (e) {
         return errorResponse(500, "Something Went Wrong", e as Error, res)
     }
