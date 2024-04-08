@@ -4,7 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": ""
+        "dev": "nodemon index.ts",
+        "build": "tsc",
+        "start:local": "npm run build && nodemon ./dist/index.js"
     },
     "keywords": [],
     "author": "",
