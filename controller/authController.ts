@@ -4,7 +4,6 @@ import { errorResponse, successResponse } from "../utils/response";
 import { comparePassword, hashPassword } from "../utils/managePassword";
 import { signToken } from "../utils/tokenHelper";
 
-
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, name, password } = req.body
@@ -28,10 +27,16 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
                 password: hashedPassword
             }
         })
-        const token = signToken(createUserObj.id)
+
+        await prisma.otp.create({
+            data: {
+                otp: '561467',
+                userId: createUserObj.id
+            }
+        })
+
         const doc = {
-            ...createUserObj,
-            token
+            ...createUserObj
         }
 
         return successResponse<typeof doc>(201, "User Signup Successfully", doc, res)
@@ -51,12 +56,12 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         })
 
         if (!userObj) {
-            return errorResponse(200, "User not exists with these email", new Error("User not already exists with these email"), res);
+            return errorResponse(203, "User not exists with these email", new Error("User not already exists with these email"), res);
         }
 
         let isPasswordCorrect = await comparePassword(userObj.password, password)
         if (!isPasswordCorrect) {
-            return errorResponse(200, "You entered the wrong password", new Error("You have entered the wrong password"), res);
+            return errorResponse(203, "You entered the wrong password", new Error("You have entered the wrong password"), res);
         }
 
         const token = signToken(userObj.id)
@@ -70,3 +75,37 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         return errorResponse(500, "Something Went Wrong", e as Error, res)
     }
 }
+
+export const verifyOTP = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email, OTP } = req.body
+
+        const userObj = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        })
+
+        if (!userObj) {
+            return errorResponse(203, "User not found with email", new Error("User not found with email"), res);
+        }
+
+        const otpObj = await prisma.otp.findFirst({
+            where: {
+                userId: userObj.id,
+                otp: OTP
+            }
+        })
+
+        if (!otpObj) {
+            return errorResponse(203, "Wrong OTP!!! Verification unsuccessful", new Error("Wrong OTP!!! Verification unsuccessful"), res)
+        }
+
+        const token = signToken(userObj.id)
+
+        return successResponse<typeof token>(200, "OTP Verified Successfully", token, res)
+    } catch (e) {
+        return errorResponse(500, "Something Went Wrong", e as Error, res)
+    }
+}
+
