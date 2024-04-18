@@ -4,7 +4,7 @@ import { errorResponse, successResponse } from "../utils/response";
 export const me = async (req: Request, res: Response, next: NextFunction) => {
     try {
         console.log(req.user)
-        return successResponse(200, "User Information Fetched Successfully", {}, res)
+        return successResponse<typeof req.user>(200, "User Information Fetched Successfully", req.user, res)
     } catch (e) {
         console.log(e)
         return errorResponse(500, "Something Went Wrong", e as Error, res)

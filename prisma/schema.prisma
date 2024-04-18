@@ -36,11 +36,12 @@ model Organization {
     User               User?                @relation(fields: [userId], references: [id])
     userId             Int?
     slug               String
-    type               String
+    type               BusinessType         @relation(fields: [businessTypeId], references: [id])
     description        String?
     createdAt          DateTime             @default(now())
     updatedAt          DateTime             @updatedAt
     OrganizationAccess OrganizationAccess[]
+    businessTypeId     Int
 
     @@index([slug], type: Hash)
 }
@@ -64,6 +65,15 @@ model Otp {
     otp       String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model BusinessType {
+    id             Int            @id @default(autoincrement())
+    name           String
+    description    String
+    examples       String[]
+    targetAudience String[]
+    Organization   Organization[]
 }
 
 // Enums declaration
