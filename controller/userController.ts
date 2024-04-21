@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../db";
 import { errorResponse, successResponse } from "../utils/response";
-export const me = async (req: Request, res: Response, next: NextFunction) => {
+export async function me(req: Request, res: Response, next: NextFunction) {
     try {
         console.log(req.user)
         return successResponse<typeof req.user>(200, "User Information Fetched Successfully", req.user, res)

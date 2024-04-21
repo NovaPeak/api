@@ -4,7 +4,7 @@ import { errorResponse, successResponse } from "../utils/response";
 import { comparePassword, hashPassword } from "../utils/managePassword";
 import { signToken } from "../utils/tokenHelper";
 
-export const signup = async (req: Request, res: Response, next: NextFunction) => {
+export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
         const { email, name, password } = req.body
 
@@ -47,7 +47,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export async function login(req: Request, res: Response, next: NextFunction) {
     try {
         const { email, password } = req.body;
 
@@ -76,7 +76,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     }
 }
 
-export const verifyOTP = async (req: Request, res: Response, next: NextFunction) => {
+export async function verifyOTP(req: Request, res: Response, next: NextFunction) {
     try {
         const { email, OTP } = req.body
 
