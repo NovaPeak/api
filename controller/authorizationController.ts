@@ -65,3 +65,12 @@ export const authorize = async (req: Request, res: Response, next: NextFunction)
         errorResponse(500, "Internal Server Error", e as Error, res); // Return a generic error response
     }
 };
+
+export async function organizationAuthorize(req: Request, res: Response, next: NextFunction) {
+    try {
+
+    } catch (e) {
+        console.error("Organization Authorization Error:", e)
+        errorResponse(500, "Internal Server Error", e as Error, res)
+    }
+}

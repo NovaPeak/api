@@ -64,3 +64,21 @@ export async function getOrganization(req: Request, res: Response, next: NextFun
         return errorResponse(500, "Something Went Wrong", e as Error, res)
     }
 }
+
+export async function loginOrganization(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { user } = req.query;
+
+        const organizationObj = await prisma.organization.findUnique({
+            where: {
+                userId: parseInt(user as string),
+                id: parseInt(req.params.id)
+            }
+        })
+        if (!organizationObj) {
+            return errorResponse(500, "Organization not found", new Error("Organization not found"), res)
+        }
+    } catch (e) {
+        return errorResponse(500, "Something Went Wrong", e as Error, res)
+    }
+}
