@@ -2,6 +2,18 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../db";
 import { errorResponse, successResponse } from "../utils/response";
 import { slugify } from "../utils/slugification";
+import { signToken } from "../utils/tokenHelper";
+
+interface Organization {
+    id: number;
+    name: string;
+    userId: number | null;
+    slug: string;
+    description: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    businessTypeId: number;
+}
 
 export async function createOrganization(req: Request, res: Response, next: NextFunction) {
     try {
@@ -39,7 +51,7 @@ export async function createOrganization(req: Request, res: Response, next: Next
             }
         })
 
-        return successResponse<typeof organization>(200, "Organization Created Successfully", organization, res)
+        return successResponse<Organization>(200, "Organization Created Successfully", organization, res)
     } catch (e) {
         console.log(e)
         return errorResponse(500, "Something Went Wrong", e as Error, res)
@@ -69,15 +81,22 @@ export async function loginOrganization(req: Request, res: Response, next: NextF
     try {
         const { user } = req.query;
 
+        const { organizationId } = req.params
+
         const organizationObj = await prisma.organization.findUnique({
             where: {
                 userId: parseInt(user as string),
-                id: parseInt(req.params.id)
+                id: parseInt(organizationId)
             }
         })
+
         if (!organizationObj) {
             return errorResponse(500, "Organization not found", new Error("Organization not found"), res)
         }
+
+        const token = signToken(organizationObj.id)
+
+        return successResponse<string>(200, "Logged in organization successfully", token, res)
     } catch (e) {
         return errorResponse(500, "Something Went Wrong", e as Error, res)
     }

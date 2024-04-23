@@ -103,7 +103,7 @@ export async function verifyOTP(req: Request, res: Response, next: NextFunction)
 
         const token = signToken(userObj.id)
 
-        return successResponse<typeof token>(200, "OTP Verified Successfully", token, res)
+        return successResponse<string>(200, "OTP Verified Successfully", token, res)
     } catch (e) {
         return errorResponse(500, "Something Went Wrong", e as Error, res)
     }
