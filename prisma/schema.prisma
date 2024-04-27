@@ -76,6 +76,39 @@ model BusinessType {
     Organization   Organization[]
 }
 
+model Product {
+    id            Int             @id @default(autoincrement())
+    name          String
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+    ExpenseRecord ExpenseRecord[]
+
+    @@index([name], type: Hash)
+}
+
+model Customer {
+    id            Int             @id @default(autoincrement())
+    name          String
+    email         String?         @unique
+    mobileNumber  String?
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+    ExpenseRecord ExpenseRecord[]
+
+    @@index([email], type: Hash)
+}
+
+model ExpenseRecord {
+    id         Int      @id @default(autoincrement())
+    price      Decimal
+    product    Product  @relation(fields: [productId], references: [id])
+    productId  Int
+    customer   Customer @relation(fields: [customerId], references: [id])
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    customerId Int
+}
+
 // Enums declaration
 enum OrganizationRole {
     Owner
