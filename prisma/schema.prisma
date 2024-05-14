@@ -31,17 +31,21 @@ model User {
 }
 
 model Organization {
-    id                 Int                  @id @default(autoincrement())
-    name               String
-    User               User?                @relation(fields: [userId], references: [id])
-    userId             Int?
-    slug               String
-    type               BusinessType         @relation(fields: [businessTypeId], references: [id])
-    description        String?
-    createdAt          DateTime             @default(now())
-    updatedAt          DateTime             @updatedAt
-    OrganizationAccess OrganizationAccess[]
-    businessTypeId     Int
+    id                   Int                    @id @default(autoincrement())
+    name                 String
+    User                 User?                  @relation(fields: [userId], references: [id])
+    userId               Int?
+    slug                 String
+    type                 BusinessType           @relation(fields: [businessTypeId], references: [id])
+    description          String?
+    createdAt            DateTime               @default(now())
+    updatedAt            DateTime               @updatedAt
+    OrganizationAccess   OrganizationAccess[]
+    businessTypeId       Int
+    Customer             Customer[]
+    Product              Product[]
+    InventoryTransaction InventoryTransaction[]
+    Feedback             Feedback[]
 
     @@index([slug], type: Hash)
 }
@@ -76,37 +80,65 @@ model BusinessType {
     Organization   Organization[]
 }
 
-model Product {
-    id            Int             @id @default(autoincrement())
-    name          String
-    createdAt     DateTime        @default(now())
-    updatedAt     DateTime        @updatedAt
-    ExpenseRecord ExpenseRecord[]
-
-    @@index([name], type: Hash)
-}
-
 model Customer {
-    id            Int             @id @default(autoincrement())
-    name          String
-    email         String?         @unique
-    mobileNumber  String?
-    createdAt     DateTime        @default(now())
-    updatedAt     DateTime        @updatedAt
-    ExpenseRecord ExpenseRecord[]
+    id             Int          @id @default(autoincrement())
+    name           String
+    email          String?      @unique
+    mobileNumber   String?
+    organization   Organization @relation(fields: [organizationId], references: [id])
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
+    organizationId Int
+    Feedback       Feedback[]
 
     @@index([email], type: Hash)
 }
 
-model ExpenseRecord {
-    id         Int      @id @default(autoincrement())
-    price      Decimal
-    product    Product  @relation(fields: [productId], references: [id])
-    productId  Int
-    customer   Customer @relation(fields: [customerId], references: [id])
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    customerId Int
+model Product {
+    id                   Int                    @id @default(autoincrement())
+    name                 String
+    description          String?
+    price                Float
+    quantity             Int                    @default(0)
+    organization         Organization           @relation(fields: [organizationId], references: [id])
+    organizationId       Int
+    createdAt            DateTime               @default(now())
+    updatedAt            DateTime               @updatedAt
+    InventoryTransaction InventoryTransaction[]
+}
+
+model InventoryTransaction {
+    id              Int             @id @default(autoincrement())
+    product         Product         @relation(fields: [productId], references: [id])
+    productId       Int
+    organization    Organization    @relation(fields: [organizationId], references: [id])
+    organizationId  Int
+    quantity        Int
+    transactionType TransactionType
+    createdAt       DateTime        @default(now())
+}
+
+model Feedback {
+    id             Int          @id @default(autoincrement())
+    customer       Customer     @relation(fields: [customerId], references: [id])
+    customerId     Int
+    organization   Organization @relation(fields: [organizationId], references: [id])
+    organizationId Int
+    feedbackType   FeedbackType
+    feedbackText   String
+    rating         Int
+    createdAt      DateTime     @default(now())
+}
+
+enum FeedbackType {
+    Product
+    Service
+    Overall
+}
+
+enum TransactionType {
+    IN
+    OUT
 }
 
 // Enums declaration
