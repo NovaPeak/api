@@ -3,10 +3,13 @@ import prisma from "../db";
 import { errorResponse, successResponse } from "../utils/response";
 import { comparePassword, hashPassword } from "../utils/managePassword";
 import { signToken } from "../utils/tokenHelper";
+import { LoginSchema, SignupSchema } from "../params/user.param";
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
         const { email, name, password } = req.body
+
+        SignupSchema.parse({ email, name, password });
 
         const userObj = await prisma.user.findUnique({
             where: {
@@ -50,7 +53,7 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
 export async function login(req: Request, res: Response, next: NextFunction) {
     try {
         const { email, password } = req.body;
-
+        LoginSchema.parse({ email, password })
         const userObj = await prisma.user.findUnique({
             where: { email }
         })
