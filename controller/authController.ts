@@ -3,7 +3,7 @@ import prisma from "../db";
 import { errorResponse, successResponse } from "../utils/response";
 import { comparePassword, hashPassword } from "../utils/managePassword";
 import { signToken } from "../utils/tokenHelper";
-import { LoginSchema, SignupSchema } from "../params/user.param";
+import { LoginSchema, OTPSchema, SignupSchema } from "../params/user.param";
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
     try {
@@ -82,6 +82,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 export async function verifyOTP(req: Request, res: Response, next: NextFunction) {
     try {
         const { email, OTP } = req.body
+
+        OTPSchema.parse({ email, OTP })
 
         const userObj = await prisma.user.findUnique({
             where: {
